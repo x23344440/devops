@@ -17,6 +17,7 @@
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
+  "homepage": "https://x23344440.github.io/devops",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -42,7 +43,6 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://x23344440.github.io/devops",
   "devDependencies": {
     "@types/jquery": "^3.5.26"
   }
