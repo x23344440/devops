@@ -1,0 +1,49 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Build and Deploy Application
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Step 2: Set up Node.js environment and build the app
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build the Application
+        run: npm run build
+
+      # Step 3: Deploy to AWS EC2
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.9
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Navigate to the deployment directory
+            cd /var/www/frontend_react || { mkdir -p /var/www/frontend_react && cd /var/www/frontend_react; }
+
+            # Remove old build files
+            rm -rf build
+
+            # Copy new build files
+            mkdir -p build
+            cp -r ~/github/workspace/build/* build/
+
+            # Restart Nginx to serve the updated application
+            sudo systemctl restart nginx
