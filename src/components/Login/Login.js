@@ -20,7 +20,7 @@ export default function Login(){
         }
 
         else{
-        Axios.get("http://54.204.74.125:4000/eventRoute/check-user/" + name)
+        Axios.get("http://3.86.59.163:4000/eventRoute/check-user/" + name)
         .then((res) => {
             if(res.status === 200)
             {   

@@ -18,7 +18,7 @@ function UpdateEvent() {
 
   useEffect(() => {
     const eventID = localStorage.getItem("eventID");
-    Axios.get("http://54.204.74.125:4000/eventRoute/check-event/" + eventID)
+    Axios.get("http://3.86.59.163:4000/eventRoute/check-event/" + eventID)
       .then(response => {
         {
             // console.log(response.data);

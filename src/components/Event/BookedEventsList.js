@@ -7,7 +7,7 @@ export default function BookedEventsList(){
     const [arr, setArr] = useState([])
     const user = localStorage.getItem("user");
     useEffect(() => {
-        Axios.get("http://54.204.74.125:4000/eventRoute/check-user/" + user)
+        Axios.get("http://3.86.59.163:4000/eventRoute/check-user/" + user)
         .then((res) => {
             if(res.status === 200){
                 if(res.data != null){

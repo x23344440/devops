@@ -18,7 +18,7 @@ function UserUpdateForm() {
   useEffect(() => {
    
     const user = localStorage.getItem('user');
-    Axios.get("http://54.204.74.125:4000/eventRoute/check-user/" + user)
+    Axios.get("http://3.86.59.163:4000/eventRoute/check-user/" + user)
       .then(response => {
         {
           setFormData(

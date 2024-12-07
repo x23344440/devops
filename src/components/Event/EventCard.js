@@ -19,7 +19,7 @@ function EventCard(props){
     const Book = () => {
         
         
-        Axios.get("http://54.204.74.125:4000/eventRoute/check-user/" + user)
+        Axios.get("http://3.86.59.163:4000/eventRoute/check-user/" + user)
         .then((res) => {
             if(res.status === 200){
                 if(res.data != null){
@@ -50,7 +50,7 @@ function EventCard(props){
 
                         Axios.all([
                         // Updating user information and adding event
-                        Axios.put("http://54.204.74.125:4000/eventRoute/update-user/" + res.data._id, userData)
+                        Axios.put("http://3.86.59.163:4000/eventRoute/update-user/" + res.data._id, userData)
                         .then((updateResponse) => {
                             if(updateResponse.status === 200)
                                 alert("Event Booked");
@@ -62,7 +62,7 @@ function EventCard(props){
                         
                         
                         // Updating event information by adding user and reducing slots
-                        Axios.put("http://54.204.74.125:4000/eventRoute/update-event/" + _id, eventData)
+                        Axios.put("http://3.86.59.163:4000/eventRoute/update-event/" + _id, eventData)
                         .then((eventUpdateResponse) => {
                             if(eventUpdateResponse.status === 200)
                             {    
@@ -166,7 +166,7 @@ function EventCard(props){
     // Function to delete event
     const deleteEvent = () => {
         Axios.all([ 
-        Axios.delete("http://54.204.74.125:4000/eventRoute/delete-event/" + _id)
+        Axios.delete("http://3.86.59.163:4000/eventRoute/delete-event/" + _id)
         .then((res) => {
             if(res.status === 200){
                 alert("Event deleted successfully");
@@ -177,7 +177,7 @@ function EventCard(props){
         })
         .catch((err) => alert(err)),
 
-        Axios.get("http://54.204.74.125:4000/eventRoute/user-list")
+        Axios.get("http://3.86.59.163:4000/eventRoute/user-list")
         .then((userResponse) => {
             if(userResponse.status === 200){
                 // Finding users who have booked current event
@@ -186,7 +186,7 @@ function EventCard(props){
                     let userData = collectedUsers[i];
                     userData.bookedEvents = userData.bookedEvents.filter((event) => event._id !== _id);
                     
-                    Axios.put("http://54.204.74.125:4000/eventRoute/update-user/" + collectedUsers[i]._id, userData)
+                    Axios.put("http://3.86.59.163:4000/eventRoute/update-user/" + collectedUsers[i]._id, userData)
                         .then((updateResponse) => {
                             if(updateResponse.status === 200)
                                 console.log("User details updated")
