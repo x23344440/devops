@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    name: Build and Deploy Application
+    name: Build and Deploy Application to GitHub Pages
     runs-on: ubuntu-latest
 
     steps:
@@ -24,26 +24,18 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
+      # If you're running ESLint as part of your build or lint step, use the --quiet flag to suppress warnings
+      - name: Run ESLint (Ignore Warnings)
+        run: npm run lint -- --quiet  # This will only show errors and suppress warnings
+
       - name: Build the Application
         run: npm run build
 
-      # Step 3: Deploy to AWS EC2
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v0.1.9
+      # Step 3: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@v4.3.1
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            # Navigate to the deployment directory
-            cd /var/www/frontend_react || { mkdir -p /var/www/frontend_react && cd /var/www/frontend_react; }
-
-            # Remove old build files
-            rm -rf build
-
-            # Copy new build files
-            mkdir -p build
-            cp -r ~/github/workspace/build/* build/
-
-            # Restart Nginx to serve the updated application
-            sudo systemctl restart nginx
+          branch: gh-pages  # The branch to push the build files to
+          folder: build     # The folder that contains your build files
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub automatically provides this token
