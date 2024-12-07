@@ -24,9 +24,9 @@ export default function Footer(){
             <Row>
                 <Col md = "12" className="footer-body">
                     <div>
-                        <a href = "#" target = "_blank" className="footer-icons"><FaLinkedin/></a>
-                        <a href = "#" target = "_blank" className="footer-icons"><FaTwitter/></a>
-                        <a href = "#" target = "_blank" className="footer-icons"><FaInstagram/></a>
+                    <button className="footer-icons" onClick={() => alert("LinkedIn Clicked")}><FaLinkedin/></button>
+                    <button className="footer-icons" onClick={() => alert("Twitter Clicked")}><FaTwitter/></button>
+                    <button className="footer-icons" onClick={() => alert("Instagram Clicked")}><FaInstagram/></button>
                     </div>
                 </Col>
             </Row>

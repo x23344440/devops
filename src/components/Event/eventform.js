@@ -19,29 +19,31 @@ const EventRegistrationForm = (props) => {
 
   useEffect(() => {
     setFormData({
-    name: `${props.nameValue}`,
-    startTime: `${props.startTimeValue}`,
-    endTime: `${props.endTimeValue}`,
-    date: `${props.dateValue}`,
-    place: `${props.placeValue}`,
-    description: `${props.descriptionValue}`,
-    club: `${props.clubValue}`,
-    slots: `${props.slotsValue}`,
-    })
-    if(props.action === "update"){
+      name: `${props.nameValue}`,
+      startTime: `${props.startTimeValue}`,
+      endTime: `${props.endTimeValue}`,
+      date: `${props.dateValue}`,
+      place: `${props.placeValue}`,
+      description: `${props.descriptionValue}`,
+      club: `${props.clubValue}`,
+      slots: `${props.slotsValue}`,
+    });
+
+    if (props.action === "update") {
       setTitle("Event Updation Form");
       setButtonTitle("Update");
     }
   }, [props.nameValue, props.startTimeValue, props.endTimeValue, 
-    props.dateValue, props.descriptionValue, props.clubValue, props.slotsValue])
+      props.dateValue, props.placeValue, props.descriptionValue, 
+      props.clubValue, props.slotsValue, props.action]);
 
   const [formErrors, setFormErrors] = useState({
-    name:'',
+    name: '',
     startTime: '',
     endTime: '',
     date: '',
     place: '',
-    description:'',
+    description: '',
     club: '',
     slots: '',
   });
@@ -49,92 +51,92 @@ const EventRegistrationForm = (props) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setFormErrors({...formErrors, [name]: value ? '' : 'This field is manditory'});
+    setFormErrors({ ...formErrors, [name]: value ? '' : 'This field is mandatory' });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(Object.values(formErrors).some((error) => error)){
+    if (Object.values(formErrors).some((error) => error)) {
       alert('Kindly fill out the required fields correctly');
       return;
     }
 
-    if (props.action === "create"){
+    if (props.action === "create") {
       Axios.post("http://3.86.59.163:4000/eventRoute/create-event", formData)
-      .then((res) => {
-        if(res.status === 200)
-        {
+        .then((res) => {
+          if (res.status === 200) {
             alert("Event created successfully");
             window.location.reload();
-        }
-        else
-          Promise.reject();
-      })
-      .catch((err) => alert(err));
-      // console.log(formData);
-    }
+          } else {
+            Promise.reject();
+          }
+        })
+        .catch((err) => alert(err));
+    } else if (props.action === "update") {
+      let eventData = {
+        name: `${formData.name}`,
+        startTime: `${formData.startTime}`,
+        endTime: `${formData.endTime}`,
+        date: `${formData.date}`,
+        place: `${formData.place}`,
+        description: `${formData.description}`,
+        club: `${formData.club}`,
+        slots: `${formData.slots}`,
+      };
 
-    else if (props.action === "update"){
-        let eventData = {
-          name : `${formData.name}`,
-          startTime : `${formData.startTime}`,
-          endTime: `${formData.endTime}`,
-          date : `${formData.date}`,
-          place : `${formData.place}`,
-          description : `${formData.description}`,
-          club : `${formData.club}`,
-          slots : `${formData.slots}`,
-        }
-        eventData.registeredUsers = eventData.registeredUsers;
-        console.log("From updation page:",eventData);
-        Axios.all([
-            Axios.put("http://3.86.59.163:4000/eventRoute/update-event/" + props.id, eventData)
-                .then((updateResponce) => {
-                    if (updateResponce.status === 200) {
-                        alert("Event updated successfully");
-   
+      // Don't assign registeredUsers to itself
+      // eventData.registeredUsers = eventData.registeredUsers; // Removed unnecessary line
+
+      Axios.all([
+        Axios.put("http://3.86.59.163:4000/eventRoute/update-event/" + props.id, eventData)
+          .then((updateResponse) => {
+            if (updateResponse.status === 200) {
+              alert("Event updated successfully");
+            } else {
+              Promise.reject();
+            }
+          })
+          .catch((updateErr) => alert(updateErr)),
+
+        Axios.get("http://3.86.59.163:4000/eventRoute/user-list")
+          .then((userResponse) => {
+            if (userResponse.status === 200) {
+              const collectedUsers = userResponse.data;
+              for (let i = 0; i < collectedUsers.length; i++) {
+                let userData = collectedUsers[i];
+                userData.bookedEvents = userData.bookedEvents.map((event) => {
+                  if (event._id === props.id) {
+                    return { 
+                      _id: props.id, 
+                      name: eventData.name, 
+                      date: eventData.date, 
+                      place: eventData.place, 
+                      club: eventData.club, 
+                      description: eventData.description, 
+                      startTime: eventData.startTime, 
+                      endTime: eventData.endTime 
+                    };
+                  }
+                  return event;
+                });
+
+                Axios.put("http://3.86.59.163:4000/eventRoute/update-user/" + collectedUsers[i]._id, userData)
+                  .then((userUpdateResponse) => {
+                    if (userUpdateResponse.status === 200) {
+                      console.log("User details updated");
                     } else {
-                        Promise.reject();
+                      Promise.reject();
                     }
-                })
-                .catch((updateErr) => alert(updateErr)),
-    
-            // To get the list of users
-            Axios.get("http://3.86.59.163:4000/eventRoute/user-list")
-                .then((userResponse) => {
-                    if (userResponse.status === 200) {
-                        // Finding users who have booked the current event
-                        const collectedUsers = userResponse.data;
-                        for (let i = 0; i < collectedUsers.length; i++) {
-                            let userData = collectedUsers[i];
-                            userData.bookedEvents = userData.bookedEvents.map((event) => {
-                                if (event._id === props.id) {
-                                    return {_id: props.id, name: eventData.name, date: eventData.date, 
-                                      place: eventData.place, club: eventData.club, description: eventData.description, 
-                                      startTime: eventData.startTime, endTime: eventData.endTime}; // Update with the modified event data
-                                }
-                                return event;
-                            });
-    
-                            // Updating the user details
-                            Axios.put("http://3.86.59.163:4000/eventRoute/update-user/" + collectedUsers[i]._id, userData)
-                                .then((userUpdateResponse) => {
-                                    if (userUpdateResponse.status === 200) {
-                                        console.log("User details updated");
-                                    } else {
-                                        Promise.reject();
-                                    }
-                                })
-                                .catch((userUpdateError) => alert(userUpdateError));
-                        }
-                    }
-                })
-                .catch((userError) => alert(userError)),
-        ]);
+                  })
+                  .catch((userUpdateError) => alert(userUpdateError));
+              }
+            }
+          })
+          .catch((userError) => alert(userError)),
+      ]);
     }
-
-    
   };
+
   return (
     <div className='eventForm'>
       <h1>{title}</h1>
@@ -161,7 +163,7 @@ const EventRegistrationForm = (props) => {
             onChange={handleChange}
             required
           />
-          <div classNmae='error'>{formErrors.startTime}</div>
+          <div className='error'>{formErrors.startTime}</div>
         </div>
         <div>
           <label htmlFor="endTime">Event End Time:</label>
@@ -173,7 +175,7 @@ const EventRegistrationForm = (props) => {
             onChange={handleChange}
             required
           />
-          <div classNmae='error'>{formErrors.endTimeTime}</div>
+          <div className='error'>{formErrors.endTime}</div>
         </div>
         <div>
           <label htmlFor="date">Event Date:</label>
@@ -185,7 +187,7 @@ const EventRegistrationForm = (props) => {
             onChange={handleChange}
             required
           />
-          <div classNmae='error'>{formErrors.date}</div>
+          <div className='error'>{formErrors.date}</div>
         </div>
         <div>
           <label htmlFor="place">Event Place:</label>
@@ -197,7 +199,7 @@ const EventRegistrationForm = (props) => {
             onChange={handleChange}
             required
           />
-          <div classNmae='error'>{formErrors.place}</div>
+          <div className='error'>{formErrors.place}</div>
         </div>
         <div>
           <label htmlFor="description">Description:</label>
@@ -209,7 +211,7 @@ const EventRegistrationForm = (props) => {
             placeholder="Enter details about event"
             required
           />
-          <div classNmae='error'>{formErrors.description}</div>
+          <div className='error'>{formErrors.description}</div>
         </div>
         <div>
           <label htmlFor="club">Name of the Club:</label>
@@ -221,7 +223,7 @@ const EventRegistrationForm = (props) => {
             onChange={handleChange}
             required
           />
-          <div classNmae='error'>{formErrors.club}</div>
+          <div className='error'>{formErrors.club}</div>
         </div>
         <div>
           <label htmlFor="slots">Number of Slots:</label>
@@ -233,12 +235,12 @@ const EventRegistrationForm = (props) => {
             onChange={handleChange}
             required
           />
-          <div classNmae='error'>{formErrors.slots}</div>
+          <div className='error'>{formErrors.slots}</div>
         </div>
         <button className='button' type="submit">{buttonTitle}</button>
       </form>
     </div>
   );
 };
+
 export default EventRegistrationForm;
-//

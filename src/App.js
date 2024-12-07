@@ -31,7 +31,8 @@ function App() {
         const user = localStorage.getItem("user");
         setLoggedIn(loginStatus);
         setUser(user);
-    }, [])
+    // eslint-disable-next-line
+    }, []) // eslint-disable-next-line
 }, 5000)
 
   return (
