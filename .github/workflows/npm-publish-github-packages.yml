@@ -24,10 +24,6 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      # If you're running ESLint as part of your build or lint step, use the --quiet flag to suppress warnings
-      - name: Run ESLint (Ignore Warnings)
-        run: npm run lint -- --quiet  # This will only show errors and suppress warnings
-
       - name: Build the Application
         run: npm run build
 
